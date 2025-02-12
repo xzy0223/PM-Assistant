@@ -15,6 +15,12 @@ This application requires Python 3.8 or later. AWS SDK (boto3) will no longer su
 
 2. **Feasibility Report Generator**
    - Generate comprehensive feasibility reports for new requirements
+   - Multi-agent system with specialized analysts:
+     - Requirement Analyst: Business and stakeholder analysis
+     - Technical Analyst: Technical feasibility and architecture
+     - Timeline Analyst: Project planning and resource allocation
+     - Supervisor: Coordination and final synthesis
+   - Resource management with real-time team availability tracking
    - Analyzes technical feasibility, resources, risks, and timeline
    - Leverages existing product knowledge for context-aware analysis
 
@@ -22,6 +28,42 @@ This application requires Python 3.8 or later. AWS SDK (boto3) will no longer su
    - Upload product documentation to the knowledge base
    - Supports text and markdown files
    - Automatically indexes content for Q&A and report generation
+
+## Architecture
+
+### Agent-Based System
+
+The application uses a multi-agent architecture for comprehensive feasibility analysis:
+
+1. **Requirement Analyst**
+   - Analyzes business requirements and stakeholder needs
+   - Identifies key objectives and success metrics
+   - Evaluates business value and constraints
+
+2. **Technical Analyst**
+   - Assesses technical feasibility and architecture
+   - Analyzes codebase and technical dependencies
+   - Provides implementation recommendations
+   - Integrates with GitHub for code analysis
+
+3. **Timeline Analyst**
+   - Plans project timelines and resource allocation
+   - Uses real-time resource availability data
+   - Estimates costs and identifies critical paths
+   - Manages team capacity and skills matching
+
+4. **Feasibility Analysis Supervisor**
+   - Coordinates between specialist agents
+   - Synthesizes analyses into final reports
+   - Provides executive summaries and recommendations
+
+### Resource Management
+
+The system includes a built-in resource management tool that tracks:
+- Developer availability and skills
+- Team capacity and expertise
+- Upcoming resource changes
+- Project allocations and timelines
 
 ## Prerequisites
 
@@ -77,7 +119,13 @@ This application requires Python 3.8 or later. AWS SDK (boto3) will no longer su
 3. **Generating Feasibility Reports**
    - Select "Feasibility Report Generator" from the sidebar
    - Enter the requirement details in the text area
-   - Click "Generate Report" to get a comprehensive analysis
+   - The system will:
+     1. Analyze business requirements
+     2. Assess technical feasibility
+     3. Plan timeline and resources
+     4. Generate comprehensive report
+   - Real-time status updates show progress of each analysis phase
+   - Final report includes executive summary and detailed recommendations
 
 4. **Uploading Documents**
    - Select "Document Upload" from the sidebar
@@ -150,6 +198,9 @@ This application requires Python 3.8 or later. AWS SDK (boto3) will no longer su
 - Enhanced search algorithms
 - Custom report templates
 - Integration with project management tools
+- Real-time resource management dashboard
+- Advanced team capacity planning
+- Integration with more version control systems
 
 ## Support
 
