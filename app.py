@@ -1,5 +1,6 @@
 import streamlit as st
 from bedrock_service import BedrockService
+from agents import FeasibilityAnalysisSupervisor
 import os
 from dotenv import load_dotenv
 from datetime import datetime
@@ -9,8 +10,9 @@ import textwrap
 # Load environment variables
 load_dotenv()
 
-# Initialize Bedrock service
+# Initialize services
 bedrock_service = BedrockService()
+feasibility_supervisor = FeasibilityAnalysisSupervisor(bedrock_service)
 
 # Default feasibility report template
 DEFAULT_REPORT_TEMPLATE = """1. Requirement Overview
@@ -179,18 +181,11 @@ def main():
                 
     elif feature == "Feasibility Report Generator":
         st.header("Feasibility Report Generator")
-        st.info("Generate a detailed feasibility report for new requirements based on existing product knowledge.")
+        st.info("Generate a detailed feasibility report for new requirements using our multi-agent system.")
         
         # Configuration sidebar
         with st.sidebar:
             st.subheader("Report Configuration")
-            
-            # System prompt configuration
-            system_prompt = st.text_area(
-                "System Prompt",
-                value=bedrock_service.default_system_prompt,
-                help="Customize how the assistant should behave"
-            )
             
             # Report template configuration
             st.markdown("### Report Template")
@@ -216,20 +211,62 @@ def main():
         
         if st.button("Generate Report"):
             if requirement:
-                with st.spinner("Generating feasibility report..."):
-                    result = bedrock_service.generate_feasibility_report(
-                        requirement,
-                        system_prompt,
-                        report_template=st.session_state.report_template
-                    )
+                # Create status containers for each agent
+                requirement_status = st.status("🔍 Requirements Analysis")
+                technical_status = st.status("💻 Technical Analysis")
+                timeline_status = st.status("📅 Timeline Analysis")
+                synthesis_status = st.status("📊 Final Synthesis")
+                
+                try:
+                    # Start requirement analysis
+                    with requirement_status:
+                        requirement_status.update(label="🔍 Requirements Analysis - In Progress")
+                        st.write("Analyzing business requirements and stakeholder needs...")
+                        requirement_analysis = feasibility_supervisor.requirement_analyst.analyze_requirement(requirement)
+                        st.write("✅ Requirements analysis completed")
+                        st.markdown("### Requirements Analysis")
+                        st.markdown(requirement_analysis)
+                        requirement_status.update(label="🔍 Requirements Analysis - Complete", state="complete")
                     
-                    st.markdown("### Feasibility Report")
-                    st.markdown(result['response'])
+                    # Start technical analysis
+                    with technical_status:
+                        technical_status.update(label="💻 Technical Analysis - In Progress")
+                        st.write("Analyzing technical feasibility and architecture...")
+                        technical_analysis = feasibility_supervisor.technical_analyst.analyze_technical_feasibility(
+                            requirement,
+                            requirement_analysis
+                        )
+                        st.write("✅ Technical analysis completed")
+                        st.markdown("### Technical Analysis")
+                        st.markdown(technical_analysis)
+                        technical_status.update(label="💻 Technical Analysis - Complete", state="complete")
                     
-                    # Display processing details
-                    display_kb_results(result['kb_chunks'])
-                    if result.get('raw_request'):
-                        display_raw_request(result['raw_request'])
+                    # Start timeline analysis
+                    with timeline_status:
+                        timeline_status.update(label="📅 Timeline Analysis - In Progress")
+                        st.write("Analyzing project timeline and resource requirements...")
+                        timeline_analysis = feasibility_supervisor.timeline_analyst.analyze_timeline(
+                            requirement,
+                            requirement_analysis,
+                            technical_analysis
+                        )
+                        st.write("✅ Timeline analysis completed")
+                        st.markdown("### Timeline Analysis")
+                        st.markdown(timeline_analysis)
+                        timeline_status.update(label="📅 Timeline Analysis - Complete", state="complete")
+                    
+                    # Start final synthesis
+                    with synthesis_status:
+                        synthesis_status.update(label="📊 Final Synthesis - In Progress")
+                        st.write("Synthesizing final feasibility report...")
+                        result = feasibility_supervisor.generate_feasibility_report(requirement)
+                        st.write("✅ Final synthesis completed")
+                        st.markdown("### Final Feasibility Report")
+                        st.markdown(result['response'])
+                        synthesis_status.update(label="📊 Final Synthesis - Complete", state="complete")
+                    
+                except Exception as e:
+                    st.error(f"Error generating report: {str(e)}")
             else:
                 st.warning("Please enter a requirement description.")
     
